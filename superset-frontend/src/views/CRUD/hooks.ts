@@ -685,6 +685,7 @@ export const copyQueryLink = (
 };
 
 export const getDatabaseImages = () => SupersetText.DB_IMAGES;
+export const getCustomDatabaseImages = () => SupersetText.DB_CUSTOM_IMAGES;
 
 export const getConnectionAlert = () => SupersetText.DB_CONNECTION_ALERTS;
 export const getDatabaseDocumentationLinks = () =>
