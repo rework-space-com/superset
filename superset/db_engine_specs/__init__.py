@@ -84,7 +84,11 @@ def load_engine_specs() -> list[type[BaseEngineSpec]]:
     return engine_specs
 
 
-def get_engine_spec(backend: str, driver: Optional[str] = None) -> type[BaseEngineSpec]:
+def get_engine_spec(
+    backend: str,
+    database_name: str | None = None,
+    driver: Optional[str] = None,
+) -> type[BaseEngineSpec]:
     """
     Return the DB engine spec associated with a given SQLAlchemy URL.
 
@@ -98,7 +102,7 @@ def get_engine_spec(backend: str, driver: Optional[str] = None) -> type[BaseEngi
 
     if driver is not None:
         for engine_spec in engine_specs:
-            if engine_spec.supports_backend(backend, driver):
+            if engine_spec.supports_backend(backend, database_name, driver):
                 return engine_spec
 
     # check ignoring the driver, in order to support new drivers; this will return a

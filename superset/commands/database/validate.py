@@ -47,12 +47,13 @@ class ValidateDatabaseParametersCommand(BaseCommand):
 
         engine = self._properties["engine"]
         driver = self._properties.get("driver")
+        database_name = self._properties.get("database_name")
 
         if engine in BYPASS_VALIDATION_ENGINES:
             # Skip engines that are only validated onCreate
             return
 
-        engine_spec = get_engine_spec(engine, driver)
+        engine_spec = get_engine_spec(engine, database_name, driver)
         if not hasattr(engine_spec, "parameters_schema"):
             raise InvalidEngineError(
                 SupersetError(

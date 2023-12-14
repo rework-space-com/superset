@@ -22,17 +22,18 @@ import re
 from re import Pattern
 from typing import Any, TypedDict
 
+import requests
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask import g
 from flask_babel import gettext as __
 from marshmallow import fields, Schema
 from marshmallow.validate import Range
-from requests import Session
 from sqlalchemy.engine.url import URL
 
 from superset.databases.utils import make_url_safe
 from superset.db_engine_specs.base import BaseEngineSpec
+from superset.db_engine_specs.shillelagh import ShillelaghEngineSpec
 from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
 from superset.exceptions import SupersetException
 
@@ -158,6 +159,15 @@ class CmicEngineSpec(BaseEngineSpec):
                     extra={"invalid": ["username", "password"]},
                 ),
             )
+        except requests.exceptions.ConnectionError:
+            errors.append(
+                SupersetError(
+                    message="Unable to connect to the CIMC API.",
+                    error_type=SupersetErrorType.CONNECTION_ACCESS_DENIED_ERROR,
+                    level=ErrorLevel.ERROR,
+                    extra={"invalid": ["username", "password"]},
+                ),
+            )
 
         return errors
 
@@ -172,10 +182,9 @@ class CmicEngineSpec(BaseEngineSpec):
 
         Helper function that handles logging and error handling.
         """
-        session: Session = Session()
         _logger.info("POST %s", url)
         _logger.debug(body)
-        response = session.post(
+        response = requests.post(
             url,
             json=body,
             **kwargs,

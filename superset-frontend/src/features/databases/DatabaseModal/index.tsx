@@ -644,9 +644,9 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
 
   const dbModel: DatabaseForm =
     availableDbs?.databases?.find(
-      (available: { engine: string | undefined }) =>
-        // TODO: we need a centralized engine in one place
-        available.engine === (isEditMode ? db?.backend : db?.engine),
+      (available: { engine: string | undefined; name: string | undefined }) =>
+        available.engine === (isEditMode ? db?.backend : db?.engine) &&
+        available.name === db?.database_name,
     ) || {};
 
   // Test Connection logic
@@ -1990,36 +1990,37 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
                 {hasAlert && renderStepTwoAlert()}
                 {renderDatabaseConnectionForm()}
                 <div css={(theme: SupersetTheme) => infoTooltip(theme)}>
-                  {dbModel.engine !== Engines.GSheet && (
-                    <>
-                      <Button
-                        data-test="sqla-connect-btn"
-                        buttonStyle="link"
-                        onClick={() =>
-                          setDB({
-                            type: ActionType.configMethodChange,
-                            payload: {
-                              engine: db.engine,
-                              configuration_method:
-                                CONFIGURATION_METHOD.SQLALCHEMY_URI,
-                              database_name: db.database_name,
-                            },
-                          })
-                        }
-                        css={buttonLinkStyles}
-                      >
-                        {t(
-                          'Connect this database with a SQLAlchemy URI string instead',
-                        )}
-                      </Button>
-                      <InfoTooltip
-                        tooltip={t(
-                          'Click this link to switch to an alternate form that allows you to input the SQLAlchemy URL for this database manually.',
-                        )}
-                        viewBox="0 -6 24 24"
-                      />
-                    </>
-                  )}
+                  {dbModel.engine !== Engines.GSheet ||
+                    (dbModel.name !== 'Cmic' && (
+                      <>
+                        <Button
+                          data-test="sqla-connect-btn"
+                          buttonStyle="link"
+                          onClick={() =>
+                            setDB({
+                              type: ActionType.configMethodChange,
+                              payload: {
+                                engine: db.engine,
+                                configuration_method:
+                                  CONFIGURATION_METHOD.SQLALCHEMY_URI,
+                                database_name: db.database_name,
+                              },
+                            })
+                          }
+                          css={buttonLinkStyles}
+                        >
+                          {t(
+                            'Connect this database with a SQLAlchemy URI string instead',
+                          )}
+                        </Button>
+                        <InfoTooltip
+                          tooltip={t(
+                            'Click this link to switch to an alternate form that allows you to input the SQLAlchemy URL for this database manually.',
+                          )}
+                          viewBox="0 -6 24 24"
+                        />
+                      </>
+                    ))}
                 </div>
                 {/* Step 2 */}
                 {showDBError && errorAlert()}
