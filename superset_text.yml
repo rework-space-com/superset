@@ -22,3 +22,4 @@
 
 DB_CUSTOM_IMAGES:
   Apex: "http://localhost:9000/static/assets/images/apex-command-alkon.svg"
+  Cmic: "http://localhost:9000/static/assets/images/cmic.svg"
